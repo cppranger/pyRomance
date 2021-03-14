@@ -1,12 +1,8 @@
-from os import path
-
-file = path.join(path.dirname(__file__), 'text', 'choises.txt')
+import config
 
 
-def nextLine():
-    with open(file, 'r') as txt:
+def readText():
+    with open(config.file, 'r') as txt:
         lines = txt.read()
     txt.close()
     return lines
-
-
