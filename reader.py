@@ -6,3 +6,5 @@ def readText():
         lines = txt.read()
     txt.close()
     return lines
+
+

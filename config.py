@@ -2,10 +2,8 @@ from os import path
 
 # display settings
 
-# WIDTH = 1280
-# HEIGHT = 720
-WIDTH = 1920
-HEIGHT = 1080
+WIDTH = 1280
+HEIGHT = 720
 
 # placing elements
 
@@ -25,17 +23,17 @@ else:
     diamonds_place = (WIDTH / 6 * 4 + 150, -30)
     diamonds_text_place = (diamonds_place[0] + 110, diamonds_place[1] + 55)
     diamonds_font = 40
-    questions_place = (WIDTH / 3, HEIGHT / 3)
-    first_answer_place = (questions_place[0] + 10, questions_place[1] + 25)
-    second_answer_place = (questions_place[0] + 10, questions_place[1] + 135)
-    questions_font = 24
+    questions_place = (WIDTH / 4 + 20, HEIGHT / 3 - 40)
+    first_answer_place = (questions_place[0] + 20, questions_place[1] + 45)
+    second_answer_place = (questions_place[0] + 20, questions_place[1] + 245)
+    questions_font = 40
     logo_place = (WIDTH / 100 + 20, 20)
-    notification_place = (WIDTH // 2.5, HEIGHT / 3)
+    notification_place = (WIDTH / 3 - 100, HEIGHT / 4)
     girl_place = (0, HEIGHT - 50)
 
 # system variables
 
-FPS = 30
+FPS = 999
 bg = 0
 diamonds_score = 10
 current_line = 0
@@ -43,6 +41,7 @@ low_diamonds = False
 isAsked = False
 isImportant = False
 isBlack = False
+show_girl = False
 
 # girls
 
@@ -56,7 +55,7 @@ Loki = 0
 # files
 
 if HEIGHT == 1080:
-    img_dir = path.join(path.dirname(__file__), 'img', '1920')
+    img_dir = path.join(path.dirname(__file__), 'img', '1080')
 else:
     img_dir = path.join(path.dirname(__file__), 'img', '720')
 mus_dir = path.join(path.dirname(__file__), 'sounds')

@@ -1,5 +1,6 @@
 import pygame
 from os import path
+from config import WIDTH
 
 import config
 
