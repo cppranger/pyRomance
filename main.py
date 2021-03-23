@@ -130,17 +130,30 @@ def getLine(number):
     return lines
 
 
-def getQuestion(number):
-    global isAsked
-    isAsked = True
-    line = getLine(number)
+def getFinal():
+    line = reader.readFinal()
+    line = line.split(';')
+    print(line)
+    return line
+
+
+def getQuestion(number=0, dontGiveAFuck=False):
+    global isAsked, show_final
     # print(line)
-    if diamonds_score >= 5:
+    if show_final:
+        if diamonds_score < 30:
+            cloud = pygame.image.load(path.join(img_dir, 'cloud_final_bad.png'))
+        else:
+            cloud = pygame.image.load(path.join(img_dir, 'cloud_final.png'))
+        line = getFinal()
+    elif diamonds_score >= 5 or dontGiveAFuck:
         cloud = pygame.image.load(path.join(img_dir, 'cloud.png'))
-    else:
+        line = getLine(number)
+    elif diamonds_score < 5:
         cloud = pygame.image.load(path.join(img_dir, 'cloud_bad.png'))
         global low_diamonds
         low_diamonds = True
+        line = getLine(number)
     d = pygame.font.SysFont('serif', questions_font)
     d_1 = d.render(line[0], True, colors.WHITE)
     d_2 = d.render(line[1], True, colors.WHITE)
@@ -152,6 +165,17 @@ def getQuestion(number):
     return line
 
 
+def makeItShiny(coordinates):
+    screen.blit(shine, coordinates)
+    if first:
+        getQuestion(current_line, True)
+    else:
+        getQuestion(current_line)
+    pygame.display.flip()
+    time.sleep(2)
+    showScreen()
+
+
 def addDiamonds():
     global diamonds_score
     diamonds_score += 5
@@ -159,16 +183,15 @@ def addDiamonds():
     diamonds_print(diamonds_score)
 
 
-def removeDiamonds():
+def removeDiamonds(amount=5):
     global diamonds_score
-    diamonds_score -= 5
+    diamonds_score -= amount
     showScreen()
     diamonds_print(diamonds_score)
 
 
 def showScreen(alpha=0):
     screen.blit(background_surface, (0, 0))
-
     main_surface.blit(main_surface, (0, 0))
     main_surface.blit(background, (0, 0))
     main_surface.blit(diamonds, diamonds_place)
@@ -260,6 +283,7 @@ logo = pygame.image.load(path.join(img_dir, 'logo.png'))
 notification = pygame.image.load(path.join(img_dir, 'notification.png'))
 notification_low = pygame.image.load(path.join(img_dir, 'notification_low.png'))
 notification_girl = pygame.image.load(path.join(img_dir, 'notification_girl.png'))
+shine = pygame.image.load(path.join(img_dir, 'shine.png'))
 # diamonds_sound = pygame.mixer.Sound(path.join(mus_dir, 'diamond.mp3'))
 # check_sound = pygame.mixer.Sound(path.join(mus_dir, 'check.mp3'))
 
@@ -269,13 +293,23 @@ running = True
 
 while running:
     for event in pygame.event.get():
+
+        # exit
+
         if event.type == pygame.QUIT:
             sys.exit()
+
         elif event.type == pygame.KEYDOWN:
+
+            # exit too
+
             if event.key == pygame.K_ESCAPE:
                 sys.exit()
+
+            # changing backs
+
             elif event.key == pygame.K_UP:
-                if bg < 8:
+                if bg < len(back.backgrounds) - 1:
                     bg += 1
                     bgchanger(bg)
                     isAsked = False
@@ -287,58 +321,101 @@ while running:
                 if bg > 0:
                     bg -= 1
                     bgchanger(bg)
+
+            # final question
+
+            elif event.key == pygame.K_e:
+                isAsked = False
+                show_final = True
+                print(show_final)
+                getQuestion()
+
+            # removing and adding diamonds
+
             elif event.key == pygame.K_w:
                 addDiamonds()
                 isAsked = False
+                if diamonds_score >= 5:
+                    low_diamonds = False
+
             elif event.key == pygame.K_s:
                 removeDiamonds()
                 isAsked = False
+                if diamonds_score < 5:
+                    low_diamonds = True
+
+            # get next question
+
             elif event.key == pygame.K_SPACE:
                 if current_line < 10:
                     isAsked = True
                     getQuestion(current_line)
+
+            # choosing answers
+
             elif event.key == pygame.K_1:
                 if isAsked:
                     if not low_diamonds:
                         setPoints(getLine(current_line), 1)
-                        current_line += 1
                         # diamonds_sound.play()
                         removeDiamonds()
+                        first = True
+                        makeItShiny(shine_first_answer)
                         showScreen()
                         isAsked = False
-
+                        current_line += 1
                     else:
                         setPoints(getLine(current_line), 2)
-                        current_line += 1
                         # check_sound.play()
                         showScreen()
                         isAsked = False
+                        first = False
+                        makeItShiny(shine_second_answer)
                         showImportance()
                         low_diamonds = False
-
+                        current_line += 1
                     if isImportant:
                         # print(isImportant)
                         showImportance()
-
+                elif show_final:
+                    removeDiamonds(30)
+                    showScreen()
             elif event.key == pygame.K_2:
                 if isAsked:
                     setPoints(getLine(current_line), 2)
-                    current_line += 1
                     low_diamonds = False
                     # check_sound.play()
                     showScreen()
                     isAsked = False
+                    first = False
+                    makeItShiny(shine_second_answer)
                     if isImportant:
                         # print(isImportant)
                         showImportance()
+                    current_line += 1
+                elif show_final:
+                    removeDiamonds(30)
+                    showScreen()
+
+            # refresh screen
+
             elif event.key == pygame.K_r:
                 showScreen()
                 isAsked = False
+
+            # find ur dream gf
+
             elif event.key == pygame.K_f:
                 girlFinder()
                 show_girl = True
+
+            # fade to black
+
             elif event.key == pygame.K_q:
                 fadeToBlack()
+
+            # changing back while in fade
+
             elif event.key == pygame.K_a:
                 if isBlack:
                     bg += 1
@@ -347,8 +424,13 @@ while running:
                 if isBlack:
                     bg -= 1
                     changeBG(bg)
+
+            # delete occasional girl-finder and final-shower flags
+
             elif event.key == pygame.K_DELETE:
                 show_girl = False
+                show_final = False
+                showScreen()
 
     clock.tick(FPS)
     pygame.display.update()

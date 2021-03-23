@@ -8,3 +8,9 @@ def readText():
     return lines
 
 
+def readFinal():
+    with open(config.final, 'r') as txt:
+        lines = txt.readline()
+    txt.close()
+    return lines
+
